@@ -23,6 +23,7 @@ func (s *SupportFeedEventHandler) CreateFeedEvent(ctx context.Context, ext domai
 	if err != nil {
 		return err
 	}
+	// TODO supporter != supported
 	return s.repo.CreatePushEvent(ctx, domain.FeedEvent{
 		Uid:   supported,
 		Type:  feedv1.EventType_Support,

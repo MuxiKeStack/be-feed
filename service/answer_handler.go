@@ -21,6 +21,7 @@ func (a *AnswerFeedEventHandler) CreateFeedEvent(ctx context.Context, ext domain
 	if err != nil {
 		return err
 	}
+	// TODO questioner != answerer 不是自问自答才发消息
 	return a.repo.CreatePushEvent(ctx, domain.FeedEvent{
 		Uid:   questioner,
 		Type:  feedv1.EventType_Answer,

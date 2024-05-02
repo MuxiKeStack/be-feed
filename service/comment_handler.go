@@ -32,6 +32,7 @@ func (c *CommentFeedEventHandler) CreateFeedEvent(ctx context.Context, ext domai
 	if err != nil {
 		return err
 	}
+	// TODO commentator != bizPublisher 给publisher发消息
 	err = c.repo.CreatePushEvent(ctx, domain.FeedEvent{
 		Uid:   bizPublisher,
 		Type:  feedv1.EventType_Comment,
@@ -41,6 +42,7 @@ func (c *CommentFeedEventHandler) CreateFeedEvent(ctx context.Context, ext domai
 	if err != nil {
 		return err
 	}
+	// TODO recipient != bizPublisher && recipient != commentator对象不是publisher也不是自己
 	if recipient != bizPublisher {
 		return c.repo.CreatePushEvent(ctx, domain.FeedEvent{
 			Uid:   recipient,

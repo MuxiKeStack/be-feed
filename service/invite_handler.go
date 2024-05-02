@@ -22,6 +22,7 @@ type InviteFeedEventHandler struct {
 func (i *InviteFeedEventHandler) CreateFeedEvent(ctx context.Context, ext domain.ExtendFields) error {
 	// 不会邀请很多，推模型
 	// invitee 受邀者是收件人
+	// TODO inviter != invitee
 	invitee, err := ext.Get("invitee").AsInt64()
 	if err != nil {
 		return err

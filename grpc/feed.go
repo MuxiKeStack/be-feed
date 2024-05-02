@@ -20,7 +20,7 @@ func NewFeedServiceServer(svc service.FeedService) *FeedServiceServer {
 }
 
 func (f *FeedServiceServer) FindFeedEvents(ctx context.Context, request *feedv1.FindFeedEventsRequest) (*feedv1.FindFeedEventsResponse, error) {
-	events, err := f.svc.FindFeedEvents(ctx, request.GetUid(), request.GetLastTime(), request.GetLimit())
+	events, err := f.svc.FindFeedEvents(ctx, request.GetUid(), request.GetLastTime(), request.GetDirection(), request.GetLimit())
 	return &feedv1.FindFeedEventsResponse{
 		FeedEvents: slice.Map(events, func(idx int, src domain.FeedEvent) *feedv1.FeedEvent {
 			return convertToV(src)

@@ -25,8 +25,8 @@ func NewFeedService(repo repository.FeedEventRepository) FeedService {
 	}
 }
 
-func (f *feedService) FindFeedEvents(ctx context.Context, uid int64, lastTime int64, limit int64) ([]domain.FeedEvent, error) {
-	return f.repo.FindPushFeedEvents(ctx, uid, lastTime, limit)
+func (f *feedService) FindFeedEvents(ctx context.Context, uid int64, lastTime int64, direction feedv1.Direction, limit int64) ([]domain.FeedEvent, error) {
+	return f.repo.FindPushFeedEvents(ctx, uid, lastTime, direction, limit)
 }
 
 func (f *feedService) CreateFeedEvent(ctx context.Context, ft domain.FeedEvent) error {

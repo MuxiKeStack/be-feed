@@ -2,12 +2,13 @@ package dao
 
 import (
 	"context"
+	"errors"
 	"gorm.io/gorm"
 )
 
 type FeedPushEventDAO interface {
 	CreateEvent(ctx context.Context, event FeedPushEvent) error
-	FindFeedEvents(ctx context.Context, uid int64, lastTime int64, limit int64) ([]FeedPushEvent, error)
+	FindFeedEvents(ctx context.Context, uid int64, lastTime int64, direction int32, limit int64) ([]FeedPushEvent, error)
 }
 
 type GORMFeedPushEventDAO struct {
@@ -18,13 +19,23 @@ func NewGORMFeedPushEventDAO(db *gorm.DB) FeedPushEventDAO {
 	return &GORMFeedPushEventDAO{db: db}
 }
 
-func (dao *GORMFeedPushEventDAO) FindFeedEvents(ctx context.Context, uid int64, lastTime int64, limit int64) ([]FeedPushEvent, error) {
+func (dao *GORMFeedPushEventDAO) FindFeedEvents(ctx context.Context, uid int64, lastTime int64, direction int32,
+	limit int64) ([]FeedPushEvent, error) {
+	query := dao.db.WithContext(ctx).Where("uid = ?", uid, lastTime)
+	const (
+		DirectionBefore = 0
+		DirectionAfter  = 1
+	)
+	switch direction {
+	case DirectionBefore:
+		query = query.Where("ctime < ?").Order("ctime DESC")
+	case DirectionAfter:
+		query = query.Where("ctime > ?").Order("ctime ASC")
+	default:
+		return nil, errors.New("不合法的查询方向")
+	}
 	var events []FeedPushEvent
-	err := dao.db.WithContext(ctx).
-		Where("uid = ? and ctime > ?", uid, lastTime).
-		Order("ctime asc").
-		Limit(int(limit)).
-		Find(&events).Error
+	err := query.Limit(int(limit)).Find(&events).Error
 	return events, err
 }
 

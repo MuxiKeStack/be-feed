@@ -12,7 +12,7 @@ import (
 
 type FeedEventRepository interface {
 	CreatePushEvent(ctx context.Context, event domain.FeedEvent) error
-	FindPushFeedEvents(ctx context.Context, uid int64, lastTime int64, limit int64) ([]domain.FeedEvent, error)
+	FindPushFeedEvents(ctx context.Context, uid int64, lastTime int64, direction feedv1.Direction, limit int64) ([]domain.FeedEvent, error)
 }
 
 type feedEventRepository struct {
@@ -23,8 +23,8 @@ func NewFeedEventRepository(pushDAO dao.FeedPushEventDAO) FeedEventRepository {
 	return &feedEventRepository{pushDAO: pushDAO}
 }
 
-func (repo *feedEventRepository) FindPushFeedEvents(ctx context.Context, uid int64, lastTime int64, limit int64) ([]domain.FeedEvent, error) {
-	events, err := repo.pushDAO.FindFeedEvents(ctx, uid, lastTime, limit)
+func (repo *feedEventRepository) FindPushFeedEvents(ctx context.Context, uid int64, lastTime int64, direction feedv1.Direction, limit int64) ([]domain.FeedEvent, error) {
+	events, err := repo.pushDAO.FindFeedEvents(ctx, uid, lastTime, int32(direction), limit)
 	return slice.Map(events, func(idx int, src dao.FeedPushEvent) domain.FeedEvent {
 		return repo.convertToPushEventDomain(src)
 	}), err
